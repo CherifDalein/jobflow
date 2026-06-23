@@ -23,11 +23,24 @@ public class JwtService {
         return Jwts.builder()
                 .setSubject(user.getId().toString())
                 .claim("email", user.getEmail())
-                .claim("role", user.getRole())
+                .claim("role", user.getRole().name())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + expirationTime))
                 .signWith(key)
                 .compact();
+    }
+
+    public Long extractUserId(String token) {
+        SecretKey key = Keys.hmacShaKeyFor(jwtToken.getBytes(StandardCharsets.UTF_8));
+
+        String userIdString = Jwts.parser()
+                .verifyWith(key)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .getSubject();
+
+        return Long.parseLong(userIdString);
     }
 
 
