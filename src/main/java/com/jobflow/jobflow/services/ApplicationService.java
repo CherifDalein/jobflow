@@ -1,6 +1,7 @@
 package com.jobflow.jobflow.services;
 
 import com.jobflow.jobflow.dto.CreateApplicationRequest;
+import com.jobflow.jobflow.dto.UpdateApplicationRequest;
 import com.jobflow.jobflow.models.Application;
 import com.jobflow.jobflow.models.User;
 import com.jobflow.jobflow.repositories.ApplicationRepository;
@@ -53,6 +54,28 @@ public class ApplicationService {
         return applicationRepository.save(application);
     }
 
-    public Application updateApplication(CreateApplicationRequest, String tokenBearer) throws  Exception {}
+    public Application updateApplication(Long id, UpdateApplicationRequest request, String tokenBearer) throws  Exception {
+        if(tokenBearer == null || !tokenBearer.startsWith("Bearer ")) {
+            throw new Exception("Token de sécurité manquant ou invalide");
+        }
+        String token = tokenBearer.substring(7);
+
+        Long userId = jwtService.extractUserId(token);
+
+        Application application = applicationRepository.findById(id)
+                .orElseThrow(() -> new Exception("Candidature non trouvée"));
+
+        if(!application.getUser().getId().equals(userId)) {
+            throw new Exception("Vous n'etes pas autorisé à modifier cette candidature");
+        }
+        application.setCompanyName(request.getCompanyName());
+        application.setLocation(request.getLocation());
+        application.setPosition(request.getPosition());
+        application.setNotes(request.getNotes());
+        application.setStatus(request.getStatus());
+
+        applicationRepository.save(application);
+        return application;
+    }
 
 }

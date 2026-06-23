@@ -1,6 +1,7 @@
 package com.jobflow.jobflow.controllers;
 
 import com.jobflow.jobflow.dto.CreateApplicationRequest;
+import com.jobflow.jobflow.dto.UpdateApplicationRequest;
 import com.jobflow.jobflow.models.Application;
 import com.jobflow.jobflow.services.ApplicationService;
 import jakarta.validation.Valid;
@@ -32,4 +33,20 @@ public class ApplicationController {
             return  ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateApplication(@Valid @PathVariable Long id,
+                                               @RequestBody UpdateApplicationRequest  request,
+                                               @RequestHeader("Authorization") String token){
+        try{
+            Application application = applicationService.updateApplication(id, request, token);
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Candidature modifiée avec succès");
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (Exception e) {
+            return  ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+
 }
