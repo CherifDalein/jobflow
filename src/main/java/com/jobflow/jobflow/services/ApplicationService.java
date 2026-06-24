@@ -6,23 +6,29 @@ import com.jobflow.jobflow.models.Application;
 import com.jobflow.jobflow.models.User;
 import com.jobflow.jobflow.repositories.ApplicationRepository;
 import com.jobflow.jobflow.repositories.UserRepository;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class ApplicationService {
     private final ApplicationRepository applicationRepository;
     private final UserRepository userRepository;
     private final JwtService jwtService;
+    private final UserService userService;
 
     public ApplicationService(ApplicationRepository applicationRepository,
                               UserRepository userRepository,
-                              JwtService jwtService) {
+                              JwtService jwtService, UserService userService) {
         this.applicationRepository = applicationRepository;
         this.userRepository = userRepository;
         this.jwtService = jwtService;
-
+        this.userService = userService;
     }
 
     public Application createApplication(CreateApplicationRequest request, String tokenBearer) throws  Exception {
@@ -93,6 +99,34 @@ public class ApplicationService {
             throw new Exception("Vous n'êtes pas autorisé a supprimer cette candidature");
         }
         applicationRepository.delete(application);
+    }
+
+    public List<Application> getAllUserApplications(String tokenBearer) throws  Exception {
+        if(tokenBearer == null || !tokenBearer.startsWith("Bearer ")) {
+            throw new Exception("Token de sécurité manquant ou invalide");
+        }
+        String token = tokenBearer.substring(7);
+
+        Long userId = jwtService.extractUserId(token);
+
+        return applicationRepository.findByUserIdOrderByApplicationDateDesc(userId);
+    }
+
+    public Page<Application> getMyApplications(int page, int size, String status, String tokenBearer) throws  Exception {
+        if(tokenBearer == null || !tokenBearer.startsWith("Bearer ")) {
+            throw new Exception("token de sécurité manquant ou invalide");
+        }
+        String token = tokenBearer.substring(7);
+        Long userId = jwtService.extractUserId(token);
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("applicationDate").descending());
+
+        if(status != null && !status.isEmpty()) {
+            return applicationRepository.findByUserIdAndStatus(userId, status, pageable);
+        }
+        else{
+            return applicationRepository.findByUserId(userId, pageable);
+        }
     }
 
 }

@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -55,6 +56,30 @@ public class ApplicationController {
             applicationService.deleteApplication(id, token);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } catch (Exception e) {
+            return  ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getApplications(@RequestHeader("Authorization") String token){
+        try{
+            List<Application> applications = applicationService.getAllUserApplications(token);
+            return ResponseEntity.status(HttpStatus.OK).body(applications);
+        }catch(Exception e){
+            return  ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/page")
+    public ResponseEntity<?> getMyApplications(@RequestHeader("Authorization") String token,
+                                               @RequestParam(value = "page", defaultValue = "0") int page,
+                                               @RequestParam(value = "size", defaultValue = "10") int size,
+                                               @RequestParam(value = "status", required = false) String status){
+        try{
+            var applicationsPage = applicationService.getMyApplications(page, size, status, token);
+            return ResponseEntity.status(HttpStatus.OK).body(applicationsPage);
+        }
+        catch (Exception e){
             return  ResponseEntity.badRequest().body(e.getMessage());
         }
     }
