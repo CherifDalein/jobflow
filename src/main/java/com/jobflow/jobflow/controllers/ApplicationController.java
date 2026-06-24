@@ -30,7 +30,7 @@ public class ApplicationController {
             response.put("message", "Candidature créée");
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception e) {
-            return  ResponseEntity.badRequest().body(e.getMessage());
+                return  ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
@@ -43,6 +43,17 @@ public class ApplicationController {
             Map<String, String> response = new HashMap<>();
             response.put("message", "Candidature modifiée avec succès");
             return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (Exception e) {
+            return  ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteApplication(@PathVariable Long id,
+                                               @RequestHeader("Authorization") String token){
+        try{
+            applicationService.deleteApplication(id, token);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } catch (Exception e) {
             return  ResponseEntity.badRequest().body(e.getMessage());
         }

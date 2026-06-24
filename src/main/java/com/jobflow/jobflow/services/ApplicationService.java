@@ -78,4 +78,21 @@ public class ApplicationService {
         return application;
     }
 
+    public void deleteApplication(Long id, String tokenBearer) throws  Exception {
+        if(tokenBearer == null || !tokenBearer.startsWith("Bearer ")) {
+            throw new Exception("Token de sécurité manquant ou invalide");
+        }
+        String token = tokenBearer.substring(7);
+
+        Long userId = jwtService.extractUserId(token);
+
+        Application application = applicationRepository.findById(id)
+                .orElseThrow(()-> new Exception("Candidature non trouvée"));
+
+        if(!application.getUser().getId().equals(userId)) {
+            throw new Exception("Vous n'êtes pas autorisé a supprimer cette candidature");
+        }
+        applicationRepository.delete(application);
+    }
+
 }
