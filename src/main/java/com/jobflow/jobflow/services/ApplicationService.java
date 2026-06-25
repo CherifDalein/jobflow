@@ -20,15 +20,13 @@ public class ApplicationService {
     private final ApplicationRepository applicationRepository;
     private final UserRepository userRepository;
     private final JwtService jwtService;
-    private final UserService userService;
 
     public ApplicationService(ApplicationRepository applicationRepository,
                               UserRepository userRepository,
-                              JwtService jwtService, UserService userService) {
+                              JwtService jwtService) {
         this.applicationRepository = applicationRepository;
         this.userRepository = userRepository;
         this.jwtService = jwtService;
-        this.userService = userService;
     }
 
     public Application createApplication(CreateApplicationRequest request, String tokenBearer) throws  Exception {

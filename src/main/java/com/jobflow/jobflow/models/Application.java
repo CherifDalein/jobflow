@@ -1,11 +1,13 @@
 package com.jobflow.jobflow.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.jobflow.jobflow.enums.ContractType;
 import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Data
@@ -27,5 +29,14 @@ public class Application {
     @JoinColumn(name = "user_id")
     @JsonBackReference  // Pour eviter les boubles infinies de Jackson
     private User user;
+
+    @OneToMany(mappedBy = "application")
+    @JsonManagedReference
+    private List<Interview> interviews;
+
+    @OneToMany(mappedBy = "application")
+    @JsonManagedReference
+    private List<Reminder> reminders;
+
 
 }
