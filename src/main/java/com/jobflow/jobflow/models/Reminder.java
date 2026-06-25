@@ -3,10 +3,12 @@ package com.jobflow.jobflow.models;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.jobflow.jobflow.enums.ReminderStatus;
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.time.LocalDate;
 
 @Entity
+@Data
 @Table(name = "reminders")
 public class Reminder {
 
