@@ -26,4 +26,8 @@ public class User {
     @JsonManagedReference
     private List<Application> applications;
 
+    @OneToMany(mappedBy = "user")
+    @JsonManagedReference
+    private List<Resume> resumes;
+
 }

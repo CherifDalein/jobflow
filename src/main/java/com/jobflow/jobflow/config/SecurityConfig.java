@@ -26,7 +26,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**",
                                 "/api/applications/**",
                                 "/api/interviews",
-                                "/api/reminders").permitAll()
+                                "/api/reminders",
+                                "/api/resumes/**").permitAll()
                         .anyRequest().authenticated()
                 );
 
