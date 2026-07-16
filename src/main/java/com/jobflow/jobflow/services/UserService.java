@@ -15,8 +15,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserService {
     private final PasswordEncoder passwordEncoder;
-    private UserRepository userRepository;
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final UserRepository userRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
