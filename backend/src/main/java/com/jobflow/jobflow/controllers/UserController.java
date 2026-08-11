@@ -1,10 +1,7 @@
 package com.jobflow.jobflow.controllers;
 
 
-import com.jobflow.jobflow.dto.CreateUserRequest;
-import com.jobflow.jobflow.dto.LoginRequest;
-import com.jobflow.jobflow.dto.LoginResponse;
-import com.jobflow.jobflow.dto.UserProfileResponse;
+import com.jobflow.jobflow.dto.*;
 import com.jobflow.jobflow.models.User;
 import com.jobflow.jobflow.services.JwtService;
 import com.jobflow.jobflow.services.UserService;
@@ -52,10 +49,21 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<?> getCurrentUser(@Valid
-                                            @RequestHeader("Authorization") String token) {
+    public ResponseEntity<?> getCurrentUser(@RequestHeader("Authorization") String token) {
         try{
             UserProfileResponse user = userService.me(token);
+            return ResponseEntity.status(HttpStatus.OK).body(user);
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/me")
+    public ResponseEntity<?> updateProfile(@Valid
+                                           @RequestHeader("Authorization") String token,
+                                           @RequestBody UpdateProfileRequest request){
+        try{
+            UserProfileResponse user = userService.updateProfile(token, request);
             return ResponseEntity.status(HttpStatus.OK).body(user);
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
