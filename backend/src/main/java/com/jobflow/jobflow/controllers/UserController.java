@@ -70,5 +70,17 @@ public class UserController {
         }
     }
 
+    @PutMapping("/me/password")
+    public ResponseEntity<?> updatePassword(@Valid
+                                            @RequestHeader("Authorization") String token,
+                                            @RequestBody ChangePasswordRequest request){
+        try{
+            userService.updatePassword(token, request);
+            return ResponseEntity.ok().build();
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
 
 }

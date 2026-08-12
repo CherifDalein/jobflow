@@ -106,4 +106,23 @@ public class UserService {
         return userProfileResponse;
     }
 
+    public  String updatePassword(String tokenBearer, ChangePasswordRequest request) throws Exception {
+        if(tokenBearer == null || !tokenBearer.startsWith("Bearer ")) {
+            throw new Exception("Invalid token");
+        }
+
+        String token = tokenBearer.substring(7);
+        Long userId = jwtService.extractUserId(token);
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new Exception("Invalid user ID"));
+
+        if(!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
+            throw new Exception("Invalid old password");
+        }
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
+        return "Mot de pass modifié avec succes";
+    }
+
 }
