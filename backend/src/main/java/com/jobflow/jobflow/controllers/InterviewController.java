@@ -54,4 +54,16 @@ public class InterviewController {
         }
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteInterview(@PathVariable Long id,
+                                             @RequestHeader("Authorization") String token) {
+
+        try {
+            interviewService.deleteInterview(id, token);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
 }

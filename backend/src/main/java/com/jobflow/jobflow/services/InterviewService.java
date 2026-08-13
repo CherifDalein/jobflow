@@ -89,5 +89,24 @@ public class InterviewService {
         return interviewRepository.save(interview);
     }
 
+    public void deleteInterview(Long id, String tokenBearer) throws Exception{
+        if(tokenBearer == null || !tokenBearer.startsWith("Bearer ")){
+            throw new Exception("Token invalide");
+        }
+        String token = tokenBearer.substring(7);
+        Long userId = jwtService.extractUserId(token);
+
+        Interview interview = interviewRepository.findById(id)
+                .orElseThrow(() -> new Exception("Entretien inexistant"));
+
+        Application application = interview.getApplication();
+        User user = application.getUser();
+        if(!user.getId().equals(userId)){
+            throw new Exception("Vous n'avez pas le droit de supprimer cet entretien");
+        }
+
+        interviewRepository.delete(interview);
+    }
+
 
 }
