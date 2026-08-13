@@ -9,6 +9,9 @@ import com.jobflow.jobflow.repositories.ApplicationRepository;
 import com.jobflow.jobflow.repositories.InterviewRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -106,6 +109,22 @@ public class InterviewService {
         }
 
         interviewRepository.delete(interview);
+    }
+
+    public List<Interview> getUpcomingInterviews(String tokenBearer) throws Exception {
+        if (tokenBearer == null || !tokenBearer.startsWith("Bearer ")) {
+            throw new Exception("Token invalide");
+        }
+
+        String token = tokenBearer.substring(7);
+        Long userId = jwtService.extractUserId(token);
+
+        LocalDateTime now = LocalDateTime.now();
+
+        return interviewRepository.findByApplicationUserIdAndScheduledDateAfterOrderByScheduledDateAsc(
+                        userId,
+                        now
+        );
     }
 
 

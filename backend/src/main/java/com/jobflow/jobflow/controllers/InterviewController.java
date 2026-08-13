@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/interviews")
 public class InterviewController {
@@ -63,6 +65,17 @@ public class InterviewController {
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/upcoming")
+    public ResponseEntity<?> getUpcomingInterviews(@RequestHeader("Authorization") String token) {
+        try {
+            List<Interview> interviews =  interviewService.getUpcomingInterviews(token);
+            return ResponseEntity.status(HttpStatus.OK).body(interviews);
+
+        }catch(Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
