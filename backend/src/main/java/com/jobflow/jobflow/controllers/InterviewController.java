@@ -1,6 +1,7 @@
 package com.jobflow.jobflow.controllers;
 
 import com.jobflow.jobflow.dto.CreateInterviewRequest;
+import com.jobflow.jobflow.dto.UpdateInterviewRequest;
 import com.jobflow.jobflow.models.Interview;
 import com.jobflow.jobflow.services.InterviewService;
 import jakarta.validation.Valid;
@@ -34,6 +35,19 @@ public class InterviewController {
                                               @RequestHeader("Authorization")  String token) {
         try{
             Interview interview = interviewService.getInterviewById(id, token);
+            return ResponseEntity.status(HttpStatus.OK).body(interview);
+        }catch(Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateInterview(@Valid
+                                             @PathVariable("id") Long id,
+                                             @RequestHeader("Authorization") String token,
+                                             @RequestBody UpdateInterviewRequest request) {
+        try{
+            Interview interview = interviewService.updateInterview(id, request,token);
             return ResponseEntity.status(HttpStatus.OK).body(interview);
         }catch(Exception e){
             return ResponseEntity.badRequest().body(e.getMessage());
