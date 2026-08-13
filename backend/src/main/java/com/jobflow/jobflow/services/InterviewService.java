@@ -3,6 +3,7 @@ package com.jobflow.jobflow.services;
 import com.jobflow.jobflow.dto.CreateInterviewRequest;
 import com.jobflow.jobflow.models.Application;
 import com.jobflow.jobflow.models.Interview;
+import com.jobflow.jobflow.models.User;
 import com.jobflow.jobflow.repositories.ApplicationRepository;
 import com.jobflow.jobflow.repositories.InterviewRepository;
 import org.springframework.stereotype.Service;
@@ -42,6 +43,24 @@ public class InterviewService {
         interview.setApplication(application);
 
         return interviewRepository.save(interview);
+    }
+
+    public Interview getInterviewById(Long interviewId, String tokenBearer) throws Exception{
+        if(tokenBearer == null || !tokenBearer.startsWith("Bearer ")){
+            throw new Exception("Token invalide");
+        }
+        String token = tokenBearer.substring(7);
+        Long userId = jwtService.extractUserId(token);
+
+        Interview interview = interviewRepository.findById(interviewId)
+                .orElseThrow(() -> new Exception("Entretien inexistant"));
+
+        Application application = interview.getApplication();
+        User user = application.getUser();
+        if(!user.getId().equals(userId)){
+            throw new Exception("Vous n'avez pas le droit d'acceder a cet entretien");
+        }
+        return interview;
     }
 
 

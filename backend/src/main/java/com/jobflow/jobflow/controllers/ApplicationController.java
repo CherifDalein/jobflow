@@ -1,5 +1,6 @@
 package com.jobflow.jobflow.controllers;
 
+import com.jobflow.jobflow.dto.ApplicationResponse;
 import com.jobflow.jobflow.dto.CreateApplicationRequest;
 import com.jobflow.jobflow.dto.UpdateApplicationRequest;
 import com.jobflow.jobflow.models.Application;
@@ -80,6 +81,18 @@ public class ApplicationController {
             return ResponseEntity.status(HttpStatus.OK).body(applicationsPage);
         }
         catch (Exception e){
+            return  ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getApplicationById(@PathVariable Long id,
+                                                @RequestHeader("Authorization") String token){
+        try{
+            ApplicationResponse application =  applicationService.getApplicationById(id, token);
+            return ResponseEntity.status(HttpStatus.OK).body(application);
+
+        }catch(Exception e){
             return  ResponseEntity.badRequest().body(e.getMessage());
         }
     }

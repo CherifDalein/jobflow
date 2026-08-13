@@ -1,5 +1,6 @@
 package com.jobflow.jobflow.services;
 
+import com.jobflow.jobflow.dto.ApplicationResponse;
 import com.jobflow.jobflow.dto.CreateApplicationRequest;
 import com.jobflow.jobflow.dto.UpdateApplicationRequest;
 import com.jobflow.jobflow.models.Application;
@@ -125,6 +126,34 @@ public class ApplicationService {
         else{
             return applicationRepository.findByUserId(userId, pageable);
         }
+    }
+
+    public ApplicationResponse getApplicationById(Long id, String tokenBearer) throws  Exception {
+        if(tokenBearer == null || !tokenBearer.startsWith("Bearer ")) {
+            throw new Exception("token de sécurité manquant ou invalide");
+        }
+
+        String token = tokenBearer.substring(7);
+        Long userId = jwtService.extractUserId(token);
+
+        Application application = applicationRepository.findById(id)
+                .orElseThrow(() -> new Exception("Candidature inexistante"));
+
+        if(!application.getUser().getId().equals(userId)) {
+            throw new Exception("Vous n'avez pas le droit d'acceder a cette candidature");
+        }
+
+        ApplicationResponse applicationResponse = new ApplicationResponse();
+        applicationResponse.setId(application.getId());
+        applicationResponse.setCompanyName(application.getCompanyName());
+        applicationResponse.setContractType(application.getContractType());
+        applicationResponse.setNotes(application.getNotes());
+        applicationResponse.setPosition(application.getPosition());
+        applicationResponse.setApplicationDate(application.getApplicationDate());
+        applicationResponse.setStatus(application.getStatus());
+        applicationResponse.setLocation(application.getLocation());
+        applicationResponse.setNotes(application.getNotes());
+        return applicationResponse;
     }
 
 }

@@ -29,4 +29,15 @@ public class InterviewController {
         }
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getInterviewById(@PathVariable("id") Long id,
+                                              @RequestHeader("Authorization")  String token) {
+        try{
+            Interview interview = interviewService.getInterviewById(id, token);
+            return ResponseEntity.status(HttpStatus.OK).body(interview);
+        }catch(Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
 }
